@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOIR | Objects for after dark</title>
+<meta name="description" content="NOIR is a small collection of fragrance, watches and leather goods, made in black.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000'/%3E%3Ctext x='16' y='24' font-size='24' text-anchor='middle' fill='%23e8e4dc' font-family='Georgia,serif'%3EN%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000;
+  --ink:#e8e4dc;
+  --muted:#948f86;
+  --line:#242424;
+  --accent:#c22f45;
+  --tile-a:#2b2b2b;
+  --tile-b:#080808;
+  --serif:"Instrument Serif",Georgia,"Times New Roman",serif;
+  --sans:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --pad:clamp(20px,4vw,56px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:400 1rem/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--serif);font-weight:400}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* Header */
+.top{position:fixed;inset:0 0 auto 0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:16px var(--pad);background:linear-gradient(#000 40%,rgba(0,0,0,0))}
+.brand{font-family:var(--serif);font-size:1.7rem;letter-spacing:.03em;line-height:1}
+.top nav{display:flex;align-items:center;gap:28px}
+.top nav a,.bag-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 0;font-weight:500}
+.top nav a:hover,.bag-btn:hover{color:#fff}
+.count{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--accent);color:#fff;font-size:.8rem;font-weight:600;font-variant-numeric:tabular-nums}
+.count[data-n="0"]{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.count.bump{animation:bump .35s ease}
+@keyframes bump{50%{transform:scale(1.3)}}
+
+/* Hero */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:120px var(--pad) var(--pad);overflow:hidden}
+.wordmark{position:relative;font-family:var(--serif);font-weight:400;font-size:clamp(6rem,34vw,30rem);line-height:.78;letter-spacing:-.02em;color:#151515;white-space:nowrap;user-select:none;padding-top:.06em}
+.wordmark::after{
+  content:attr(data-text);position:absolute;left:0;top:0;padding-top:.06em;
+  background:linear-gradient(105deg,transparent 38%,#f1ede4 50%,transparent 62%) 100% 0/300% 100% no-repeat;
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;
+  -webkit-mask-image:repeating-linear-gradient(105deg,#000 0 .05em,transparent .05em .11em);
+  mask-image:repeating-linear-gradient(105deg,#000 0 .05em,transparent .05em .11em);
+  animation:sweep 3.6s cubic-bezier(.3,.6,.2,1) .3s both;
+}
+@keyframes sweep{from{background-position:100% 0}to{background-position:45% 0}}
+.hero-foot{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-top:clamp(20px,4vw,40px);padding-top:22px;border-top:1px solid var(--line)}
+.hero-foot p{font-family:var(--serif);font-size:clamp(1.6rem,3.2vw,2.4rem);line-height:1.1;max-width:16ch}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:14px 26px;border:1px solid var(--ink);font-weight:500;transition:background .2s,color .2s,filter .2s}
+.btn:hover{background:var(--ink);color:var(--bg)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent);color:#fff;filter:brightness(1.15)}
+
+/* Collection */
+.shop{padding:clamp(64px,10vw,140px) var(--pad);scroll-margin-top:0}
+.shop-head{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;margin-bottom:36px}
+.shop-head h2{font-size:clamp(2.6rem,6vw,4.6rem);line-height:1}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:8px 15px;border:1px solid var(--line);border-radius:999px;color:var(--muted);transition:color .2s,border-color .2s}
+.chip:hover{color:var(--ink);border-color:#4a4a4a}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:36px 16px}
+@media(min-width:720px){.grid{grid-template-columns:repeat(3,1fr);gap:44px 22px}}
+@media(min-width:1100px){.grid{grid-template-columns:repeat(4,1fr)}}
+
+.card{display:flex;flex-direction:column}
+.tile{aspect-ratio:4/5;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 18%,var(--tile-a),var(--tile-b) 70%);color:#d9d4ca;overflow:hidden}
+.art{width:58%;height:auto;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .5s ease}
+.card:hover .art{transform:translateY(-5px)}
+.meta{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:2px 12px;padding-top:14px}
+.meta h3{font-size:1.4rem;line-height:1.15}
+.price{font-variant-numeric:tabular-nums;font-weight:500}
+.note{color:var(--muted);font-size:.9rem;margin:4px 0 14px;max-width:34ch}
+.add{margin-top:auto;padding:12px;border:1px solid var(--line);font-weight:500;transition:background .2s,color .2s,border-color .2s}
+.add:hover{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Promises */
+.promise{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:36px;padding:64px var(--pad);border-top:1px solid var(--line)}
+.promise h3{font-size:1.7rem;margin-bottom:6px}
+.promise p{color:var(--muted);max-width:32ch}
+
+footer.site{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px 32px;padding:32px var(--pad) 48px;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem}
+footer.site .brand{color:var(--ink)}
+
+/* Bag drawer */
+.scrim{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.65);opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s .3s}
+.scrim.open{opacity:1;visibility:visible;transition:opacity .3s}
+.drawer{position:fixed;top:0;right:0;bottom:0;z-index:40;width:min(440px,100%);display:flex;flex-direction:column;background:#0b0b0b;border-left:1px solid var(--line);transform:translateX(100%);visibility:hidden;transition:transform .35s ease,visibility 0s .35s}
+.drawer.open{transform:none;visibility:visible;transition:transform .35s ease}
+.drawer-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+.drawer-head h2{font-size:2rem;line-height:1}
+.close{padding:8px 0;color:var(--muted)}
+.close:hover{color:var(--ink)}
+.lines{list-style:none;padding:0 24px;flex:1;overflow-y:auto}
+.line{display:grid;grid-template-columns:76px 1fr auto;gap:16px;padding:20px 0;border-bottom:1px solid var(--line)}
+.thumb{aspect-ratio:4/5;display:grid;place-items:center;background:radial-gradient(120% 90% at 50% 18%,var(--tile-a),var(--tile-b) 70%);color:#d9d4ca}
+.thumb .art{width:64%}
+.line h3{font-size:1.25rem;line-height:1.15}
+.line .unit{color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.qty{display:inline-flex;align-items:center;margin-top:10px;border:1px solid var(--line)}
+.qty button{width:34px;height:34px;font-size:1.1rem}
+.qty button:hover{background:var(--ink);color:var(--bg)}
+.qty span{min-width:30px;text-align:center;font-variant-numeric:tabular-nums}
+.rm{display:block;margin-top:8px;padding:4px 0;color:var(--muted);font-size:.85rem;text-decoration:underline;text-underline-offset:3px}
+.rm:hover{color:var(--ink)}
+.ltotal{font-weight:500;font-variant-numeric:tabular-nums}
+.empty{padding:56px 0;text-align:center}
+.empty h3{font-size:1.8rem;margin-bottom:8px}
+.empty p{color:var(--muted);margin-bottom:24px}
+.drawer-foot{padding:20px 24px 24px;border-top:1px solid var(--line)}
+.sub{display:flex;justify-content:space-between;align-items:baseline;font-size:1.1rem}
+.sub strong{font-family:var(--serif);font-weight:400;font-size:1.9rem;font-variant-numeric:tabular-nums}
+.fine{color:var(--muted);font-size:.85rem;margin:4px 0 16px}
+.drawer-foot .btn{width:100%}
+.btn[disabled]{opacity:.4;cursor:not-allowed;filter:none}
+
+.toast{position:fixed;left:50%;bottom:24px;z-index:50;transform:translate(-50%,20px);max-width:calc(100% - 32px);padding:12px 20px;background:var(--ink);color:#000;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:520px){.top nav{gap:18px}}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-delay:0s!important}
+  .wordmark::after{animation:none;background-position:45% 0}
+}
+</style>
+</head>
+<body>
+
+<!-- Product line art -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="a-perfume" viewBox="0 0 200 200">
+      <rect x="58" y="82" width="84" height="92" rx="8"/>
+      <rect x="86" y="58" width="28" height="24"/>
+      <rect x="78" y="34" width="44" height="24" rx="3"/>
+      <rect x="72" y="112" width="56" height="34"/>
+      <path d="M84 129h32"/>
+    </symbol>
+    <symbol id="a-watch" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="40"/>
+      <circle cx="100" cy="100" r="48"/>
+      <path d="M80 56l6-34h28l6 34M80 144l6 34h28l6-34"/>
+      <path d="M100 100V74M100 100l16 9"/>
+      <path d="M100 66v6M100 128v6M66 100h6M128 100h6"/>
+      <rect x="148" y="95" width="9" height="10" rx="2"/>
+    </symbol>
+    <symbol id="a-tote" viewBox="0 0 200 200">
+      <path d="M46 86h108l10 88H36z"/>
+      <path d="M76 86c0-46 48-46 48 0"/>
+      <path d="M60 102h80" stroke-dasharray="3 5" opacity=".6"/>
+      <rect x="92" y="112" width="16" height="22" rx="3"/>
+    </symbol>
+    <symbol id="a-shades" viewBox="0 0 200 200">
+      <rect x="26" y="78" width="66" height="46" rx="20"/>
+      <rect x="108" y="78" width="66" height="46" rx="20"/>
+      <path d="M92 92q8-8 16 0"/>
+      <path d="M26 90L12 84M174 90l14-6"/>
+    </symbol>
+    <symbol id="a-ring" viewBox="0 0 200 200">
+      <path d="M76 84A45 45 0 1 0 124 84"/>
+      <path d="M84 90A36 36 0 1 0 116 90"/>
+      <path d="M76 84l8 6M124 84l-8 6"/>
+      <path d="M76 84l6-28h36l6 28z"/>
+      <rect x="90" y="64" width="20" height="12" rx="2"/>
+    </symbol>
+    <symbol id="a-wallet" viewBox="0 0 200 200">
+      <rect x="34" y="64" width="132" height="84" rx="8"/>
+      <path d="M34 88h132"/>
+      <rect x="140" y="98" width="26" height="28" rx="4"/>
+      <circle cx="153" cy="112" r="3"/>
+      <rect x="44" y="72" width="112" height="68" rx="4" stroke-dasharray="3 5" opacity=".5"/>
+    </symbol>
+    <symbol id="a-scarf" viewBox="0 0 200 200">
+      <ellipse cx="100" cy="56" rx="20" ry="15"/>
+      <path d="M86 68L60 170l36 8 10-108"/>
+      <path d="M110 68l20 104 34-14-44-92"/>
+      <path d="M70 136l28 8M66 152l28 8M132 120l22 6M136 138l22 6" opacity=".6"/>
+    </symbol>
+    <symbol id="a-pen" viewBox="0 0 200 200">
+      <g transform="rotate(35 100 100)">
+        <rect x="88" y="26" width="24" height="104" rx="10"/>
+        <path d="M88 52h24M112 40v22"/>
+        <path d="M92 130h16l-4 14h-8z"/>
+        <path d="M96 144l4 36 4-36"/>
+        <path d="M100 156v24"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <a class="brand" href="#top" aria-label="NOIR home">Noir</a>
+  <nav aria-label="Main">
+    <a href="#collection">Collection</a>
+    <button class="bag-btn" id="bagBtn" aria-label="Open bag, 0 items">Bag <span class="count" id="count" data-n="0" aria-hidden="true">0</span></button>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-title">
+    <h1 class="wordmark" id="hero-title" data-text="NOIR">NOIR</h1>
+    <div class="hero-foot">
+      <p>Objects for after dark.</p>
+      <a class="btn btn-primary" href="#collection">Shop the collection</a>
+    </div>
+  </section>
+
+  <section class="shop" id="collection" aria-labelledby="shop-title">
+    <div class="shop-head">
+      <h2 id="shop-title">The collection</h2>
+      <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section class="promise" aria-label="Our promises">
+    <div><h3>Insured shipping</h3><p>Every order travels insured and signed for, anywhere in the world.</p></div>
+    <div><h3>Thirty-day returns</h3><p>Send it back unworn or unopened within thirty days for a full refund.</p></div>
+    <div><h3>Gift ready</h3><p>Black box, black ribbon, and no prices inside.</p></div>
+  </section>
+</main>
+
+<footer class="site">
+  <span class="brand">Noir</span>
+  <span>This is a demo store. Nothing here is for sale and no payments are taken.</span>
+  <span id="year"></span>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="bagTitle">
+  <div class="drawer-head">
+    <h2 id="bagTitle">Your bag</h2>
+    <button class="close" id="closeBtn">Close</button>
+  </div>
+  <ul class="lines" id="lines"></ul>
+  <div class="drawer-foot">
+    <div class="sub"><span>Subtotal</span><strong id="subtotal">$0</strong></div>
+    <p class="fine">Shipping and taxes are calculated at checkout.</p>
+    <button class="btn btn-primary" id="checkout">Check out</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const PRODUCTS = [
+    { id:'nuit',     name:'Nuit Eau de Parfum',      cat:'Fragrance',   price:210,  art:'perfume', note:'Black pepper, oud and smoke. 50 ml.' },
+    { id:'meridian', name:'Meridian Chronograph',    cat:'Watches',     price:1450, art:'watch',   note:'Steel case, black dial, 40 mm.' },
+    { id:'vesper',   name:'Vesper Tote',             cat:'Leather',     price:890,  art:'tote',    note:'Full-grain calf leather with a suede lining.' },
+    { id:'shade',    name:'Shade No. 9 Sunglasses',  cat:'Accessories', price:320,  art:'shades',  note:'Black acetate frame, smoked lenses.' },
+    { id:'signet',   name:'Onyx Signet Ring',        cat:'Accessories', price:540,  art:'ring',    note:'Sterling silver with a polished onyx face.' },
+    { id:'cinder',   name:'Cinder Wallet',           cat:'Leather',     price:260,  art:'wallet',  note:'Six card slots and one flat pocket.' },
+    { id:'midnight', name:'Midnight Silk Scarf',     cat:'Accessories', price:180,  art:'scarf',   note:'Hand-rolled edges, 90 cm square.' },
+    { id:'ink',      name:'Ink Fountain Pen',        cat:'Accessories', price:410,  art:'pen',     note:'Matte black resin with a steel nib.' }
+  ];
+  const BY_ID = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
+  const CATS = ['All', ...new Set(PRODUCTS.map(p => p.cat))];
+  const money = n => new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 }).format(n);
+  const $ = s => document.querySelector(s);
+  const art = id => `<svg class="art" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><use href="#a-${id}"/></svg>`;
+
+  const grid = $('#grid'), filtersEl = $('#filters'), lines = $('#lines'),
+        drawer = $('#drawer'), scrim = $('#scrim'), countEl = $('#count'),
+        bagBtn = $('#bagBtn'), closeBtn = $('#closeBtn'), toastEl = $('#toast'),
+        subtotalEl = $('#subtotal'), checkoutBtn = $('#checkout');
+
+  let filter = 'All';
+  let cart = loadCart();
+  let lastFocus = null;
+  let toastTimer;
+
+  /* ---------- storage ---------- */
+  function loadCart() {
+    try {
+      const raw = JSON.parse(localStorage.getItem('noir-cart'));
+      const clean = {};
+      if (raw && typeof raw === 'object') {
+        for (const [id, q] of Object.entries(raw)) {
+          if (BY_ID[id] && Number.isInteger(q) && q > 0) clean[id] = Math.min(q, 99);
+        }
+      }
+      return clean;
+    } catch { return {}; }
+  }
+  function saveCart() { try { localStorage.setItem('noir-cart', JSON.stringify(cart)); } catch {} }
+
+  /* ---------- cart logic ---------- */
+  const totalItems = () => Object.values(cart).reduce((a, b) => a + b, 0);
+  const subtotal = () => Object.entries(cart).reduce((s, [id, q]) => s + BY_ID[id].price * q, 0);
+
+  function addItem(id) {
+    cart[id] = Math.min((cart[id] || 0) + 1, 99);
+    commit();
+    toast(`${BY_ID[id].name} added to your bag`);
+    countEl.classList.remove('bump'); void countEl.offsetWidth; countEl.classList.add('bump');
+  }
+  function setQty(id, q) {
+    if (q <= 0) delete cart[id]; else cart[id] = Math.min(q, 99);
+    commit();
+  }
+  function commit() { saveCart(); renderCount(); renderCart(); }
+
+  /* ---------- rendering ---------- */
+  function renderFilters() {
+    filtersEl.innerHTML = CATS.map(c =>
+      `<button class="chip" data-cat="${c}" aria-pressed="${c === filter}">${c}</button>`).join('');
+  }
+  function renderGrid() {
+    const list = filter === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.cat === filter);
+    grid.innerHTML = list.map(p => `
+      <article class="card">
+        <div class="tile">${art(p.art)}</div>
+        <div class="meta"><h3>${p.name}</h3><span class="price">${money(p.price)}</span></div>
+        <p class="note">${p.note}</p>
+        <button class="add" data-add="${p.id}" aria-label="Add ${p.name} to bag">Add to bag</button>
+      </article>`).join('');
+  }
+  function renderCount() {
+    const n = totalItems();
+    countEl.textContent = n;
+    countEl.dataset.n = n;
+    bagBtn.setAttribute('aria-label', `Open bag, ${n} ${n === 1 ? 'item' : 'items'}`);
+  }
+  function renderCart(refocus) {
+    const entries = Object.entries(cart);
+    if (!entries.length) {
+      lines.innerHTML = `<li class="empty"><h3>Your bag is empty</h3><p>Pick something from the collection and it will show up here.</p><button class="btn" data-browse>Browse the collection</button></li>`;
+    } else {
+      lines.innerHTML = entries.map(([id, q]) => {
+        const p = BY_ID[id];
+        return `
+        <li class="line" data-id="${id}">
+          <div class="thumb">${art(p.art)}</div>
+          <div>
+            <h3>${p.name}</h3>
+            <div class="unit">${money(p.price)} each</div>
+            <div class="qty">
+              <button data-dec aria-label="Decrease quantity of ${p.name}">&minus;</button>
+              <span>${q}</span>
+              <button data-inc aria-label="Increase quantity of ${p.name}">+</button>
+            </div>
+            <button class="rm" data-rm>Remove</button>
+          </div>
+          <strong class="ltotal">${money(p.price * q)}</strong>
+        </li>`;
+      }).join('');
+    }
+    subtotalEl.textContent = money(subtotal());
+    checkoutBtn.disabled = !entries.length;
+    if (refocus) {
+      const target = lines.querySelector(`[data-id="${refocus.id}"] [${refocus.action}]`) || closeBtn;
+      target.focus();
+    }
+  }
+
+  /* ---------- drawer ---------- */
+  function openDrawer() {
+    lastFocus = document.activeElement;
+    drawer.classList.add('open'); scrim.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+  }
+  function closeDrawer() {
+    drawer.classList.remove('open'); scrim.classList.remove('open');
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  const isOpen = () => drawer.classList.contains('open');
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2400);
+  }
+
+  /* ---------- events ---------- */
+  filtersEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-cat]');
+    if (!b) return;
+    filter = b.dataset.cat;
+    renderFilters(); renderGrid();
+    filtersEl.querySelector(`[data-cat="${filter}"]`).focus();
+  });
+  grid.addEventListener('click', e => {
+    const b = e.target.closest('[data-add]');
+    if (b) addItem(b.dataset.add);
+  });
+  lines.addEventListener('click', e => {
+    const browse = e.target.closest('[data-browse]');
+    if (browse) { closeDrawer(); location.hash = 'collection'; return; }
+    const b = e.target.closest('button');
+    const li = e.target.closest('.line');
+    if (!b || !li) return;
+    const id = li.dataset.id;
+    let action = null;
+    if (b.hasAttribute('data-inc')) { setQty(id, (cart[id] || 0) + 1); action = 'data-inc'; }
+    else if (b.hasAttribute('data-dec')) { setQty(id, (cart[id] || 0) - 1); action = 'data-dec'; }
+    else if (b.hasAttribute('data-rm')) { setQty(id, 0); }
+    if (cart[id]) renderCart({ id, action: action || 'data-inc' }); else renderCart({ id: '', action: '' });
+  });
+  bagBtn.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  scrim.addEventListener('click', closeDrawer);
+  checkoutBtn.addEventListener('click', () => toast("Checkout isn't connected yet. This is a demo store."));
+  document.addEventListener('keydown', e => {
+    if (!isOpen()) return;
+    if (e.key === 'Escape') { closeDrawer(); return; }
+    if (e.key === 'Tab') {
+      const f = [...drawer.querySelectorAll('button:not([disabled])')];
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+  window.addEventListener('storage', e => {
+    if (e.key === 'noir-cart') { cart = loadCart(); renderCount(); renderCart(); }
+  });
+
+  /* ---------- init ---------- */
+  $('#year').textContent = new Date().getFullYear();
+  renderFilters(); renderGrid(); renderCount(); renderCart();
+})();
+</script>
+</body>
+</html>
