@@ -5,9 +5,15 @@
     { id:'lune', name:'Lune Blanche', cat:'Fragrance', price:160, art:'perfume3', note:'Jasmine, white musk and cedar. 30 ml.' },
     { id:'vesper', name:'Vesper Tote', cat:'Bags', price:890, art:'tote', note:'Full-grain leather with a suede lining.' },
     { id:'soir', name:'Soir Clutch', cat:'Bags', price:320, art:'clutch', note:'Satin finish with a detachable chain.' },
+    { id:'cinder', name:'Cinder Wallet', cat:'Bags', price:260, art:'wallet', note:'Six card slots and one flat pocket.' },
     { id:'velours', name:'Velours Face Cream', cat:'Skincare', price:95, art:'jar', note:'Rich daily moisturizer with shea butter. 50 ml.' },
     { id:'eclat', name:'Éclat Vitamin C Serum', cat:'Skincare', price:78, art:'serum', note:'Lightweight daily serum. 30 ml.' },
-    { id:'douceur', name:'Douceur Gentle Cleanser', cat:'Skincare', price:42, art:'tube', note:'Soft foaming face wash. 100 ml.' }
+    { id:'douceur', name:'Douceur Gentle Cleanser', cat:'Skincare', price:42, art:'tube', note:'Soft foaming face wash. 100 ml.' },
+    { id:'meridian', name:'Meridian Chronograph', cat:'Watches', price:1450, art:'watch', note:'Steel case, black dial, 40 mm.' },
+    { id:'shade', name:'Shade No. 9 Sunglasses', cat:'Accessories', price:320, art:'shades', note:'Black acetate frame, smoked lenses.' },
+    { id:'signet', name:'Onyx Signet Ring', cat:'Accessories', price:540, art:'ring', note:'Sterling silver with a polished onyx face.' },
+    { id:'midnight', name:'Midnight Silk Scarf', cat:'Accessories', price:180, art:'scarf', note:'Hand-rolled edges, 90 cm square.' },
+    { id:'ink', name:'Ink Fountain Pen', cat:'Accessories', price:410, art:'pen', note:'Matte black resin with a steel nib.' }
   ];
   const BY_ID = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
   const CATS = ['All', ...new Set(PRODUCTS.map(p => p.cat))];
