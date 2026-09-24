@@ -1,7 +1,7 @@
 (() => {
   // ---- Shop settings ----
   const SHOP_NAME = 'NOIR';
-  const WHATSAPP_NUMBER = '233YOURNUMBER'; // country code + number, no + or spaces
+  const WHATSAPP_NUMBER = '233598119357'; // country code + number, no + or spaces
 
   const PRODUCTS = [
     { id:'nuit', name:'Nuit Eau de Parfum', cat:'Fragrance', price:210, art:'perfume', note:'Black pepper, oud and smoke. 50 ml.' },
