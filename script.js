@@ -211,7 +211,8 @@
     if (!entries.length) return;
     if (!/^\d{8,15}$/.test(WHATSAPP_NUMBER)) { toast('Add your WhatsApp number in config.js first.'); return; }
     const rows = entries.map(([id, q]) => `- ${q} x ${BY_ID[id].name} (${money(BY_ID[id].price * q)})`);
-    const text = `Hello ${SHOP_NAME}, I'd like to order:\n${rows.join('\n')}\nTotal: ${money(subtotal())}`;
+    const extra = Array.isArray(STORE.orderFields) && STORE.orderFields.length ? '\n\n' + STORE.orderFields.join('\n') : '';
+    const text = `Hello ${SHOP_NAME}, I'd like to order:\n${rows.join('\n')}\nTotal: ${money(subtotal())}${extra}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
   });
   document.addEventListener('keydown', e => {

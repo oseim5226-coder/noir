@@ -9,6 +9,7 @@ window.STORE = {
   accent: '#c22f45',
   collectionTitle: 'The collection',
   footerNote: 'Demo store. Products and prices are placeholders.',
+  orderFields: ['Name:', 'Delivery location:'], // lines customers fill in before sending
   promises: [
     { title: 'Delivery', text: 'We deliver in Accra and nationwide. The fee is confirmed on WhatsApp.' },
     { title: 'Easy returns', text: 'Message us within 7 days if something is not right.' },
