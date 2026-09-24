@@ -11,6 +11,7 @@
   const BY_ID = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
   const CATS = ['All', ...new Set(PRODUCTS.map(p => p.cat).filter(Boolean))];
   const CART_KEY = 'cart:' + SHOP_NAME;
+  const LABELS = Object.assign({ add: 'Add to bag', bag: 'Your bag', bagBtn: 'Bag', order: 'Order on WhatsApp', subtotal: 'Subtotal', total: 'Total', greeting: "I'd like to order:" }, STORE.labels || {});
 
   let fmt;
   try {
@@ -19,6 +20,7 @@
     fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
   const money = n => fmt.format(n);
+  const priceLabel = p => (p.from ? 'From ' : '') + money(p.price);
   const $ = s => document.querySelector(s);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const visual = p => {
@@ -49,6 +51,11 @@
     setText('#tagline', STORE.tagline);
     setText('#shop-title', STORE.collectionTitle);
     setText('#footNote', STORE.footerNote);
+    setText('#heroBtn', STORE.heroButton);
+    setText('#subLabel', LABELS.subtotal);
+    setText('#checkout', LABELS.order);
+    setText('#bagTitle', LABELS.bag);
+    if (bagBtn.firstChild && bagBtn.firstChild.nodeType === 3) bagBtn.firstChild.textContent = LABELS.bagBtn + ' ';
     const top = $('#brandTop');
     if (top) top.setAttribute('aria-label', SHOP_NAME + ' home');
     const hero = $('#hero-title');
@@ -93,7 +100,7 @@
   function addItem(id) {
     cart[id] = Math.min((cart[id] || 0) + 1, 99);
     commit();
-    toast(`${BY_ID[id].name} added to your bag`);
+    toast(`${BY_ID[id].name} added`);
     countEl.classList.remove('bump'); void countEl.offsetWidth; countEl.classList.add('bump');
   }
   function setQty(id, q) {
@@ -113,21 +120,21 @@
     grid.innerHTML = list.map(p => `
       <article class="card">
         <div class="tile">${visual(p)}</div>
-        <div class="meta"><h3>${esc(p.name)}</h3><span class="price">${money(p.price)}</span></div>
+        <div class="meta"><h3>${esc(p.name)}</h3><span class="price">${priceLabel(p)}</span></div>
         ${p.note ? `<p class="note">${esc(p.note)}</p>` : '<div class="note"></div>'}
-        <button class="add" data-add="${esc(p.id)}" aria-label="Add ${esc(p.name)} to bag">Add to bag</button>
+        <button class="add" data-add="${esc(p.id)}" aria-label="${esc(LABELS.add)}: ${esc(p.name)}">${esc(LABELS.add)}</button>
       </article>`).join('');
   }
   function renderCount() {
     const n = totalItems();
     countEl.textContent = n;
     countEl.dataset.n = n;
-    bagBtn.setAttribute('aria-label', `Open bag, ${n} ${n === 1 ? 'item' : 'items'}`);
+    bagBtn.setAttribute('aria-label', `Open ${LABELS.bagBtn.toLowerCase()}, ${n} ${n === 1 ? 'item' : 'items'}`);
   }
   function renderCart(refocus) {
     const entries = Object.entries(cart);
     if (!entries.length) {
-      lines.innerHTML = `<li class="empty"><h3>Your bag is empty</h3><p>Pick something from the collection and it will show up here.</p><button class="btn" data-browse>Browse the collection</button></li>`;
+      lines.innerHTML = `<li class="empty"><h3>${esc(LABELS.bag)} is empty</h3><p>Add something and it will show up here.</p><button class="btn" data-browse>Keep browsing</button></li>`;
     } else {
       lines.innerHTML = entries.map(([id, q]) => {
         const p = BY_ID[id];
@@ -136,7 +143,7 @@
           <div class="thumb">${visual(p)}</div>
           <div>
             <h3>${esc(p.name)}</h3>
-            <div class="unit">${money(p.price)} each</div>
+            <div class="unit">${priceLabel(p)} each</div>
             <div class="qty">
               <button data-dec aria-label="Decrease quantity of ${esc(p.name)}">&minus;</button>
               <span>${q}</span>
@@ -212,7 +219,7 @@
     if (!/^\d{8,15}$/.test(WHATSAPP_NUMBER)) { toast('Add your WhatsApp number in config.js first.'); return; }
     const rows = entries.map(([id, q]) => `- ${q} x ${BY_ID[id].name} (${money(BY_ID[id].price * q)})`);
     const extra = Array.isArray(STORE.orderFields) && STORE.orderFields.length ? '\n\n' + STORE.orderFields.join('\n') : '';
-    const text = `Hello ${SHOP_NAME}, I'd like to order:\n${rows.join('\n')}\nTotal: ${money(subtotal())}${extra}`;
+    const text = `Hello ${SHOP_NAME}, ${LABELS.greeting}\n${rows.join('\n')}\n${LABELS.total}: ${money(subtotal())}${extra}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
   });
   document.addEventListener('keydown', e => {
