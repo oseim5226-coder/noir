@@ -114,7 +114,7 @@
 </svg>
 
 <header class="top">
-  <a class="brand" href="#top" aria-label="NOIR home">Noir</a>
+  <a class="brand" id="brandTop" href="#top" aria-label="NOIR home">NOIR</a>
   <nav aria-label="Main">
     <a href="#collection">Collection</a>
     <button class="bag-btn" id="bagBtn" aria-label="Open bag, 0 items">Bag <span class="count" id="count" data-n="0" aria-hidden="true">0</span></button>
@@ -125,7 +125,7 @@
   <section class="hero" aria-labelledby="hero-title">
     <h1 class="wordmark" id="hero-title" data-text="NOIR">NOIR</h1>
     <div class="hero-foot">
-      <p>Objects for after dark.</p>
+      <p id="tagline">Objects for after dark.</p>
       <a class="btn btn-primary" href="#collection">Shop the collection</a>
     </div>
   </section>
@@ -138,7 +138,7 @@
     <div class="grid" id="grid"></div>
   </section>
 
-  <section class="promise" aria-label="Our promises">
+  <section class="promise" id="promises" aria-label="Our promises">
     <div><h3>Insured shipping</h3><p>Every order travels insured and signed for, anywhere in the world.</p></div>
     <div><h3>Thirty-day returns</h3><p>Send it back unworn or unopened within thirty days for a full refund.</p></div>
     <div><h3>Gift ready</h3><p>Black box, black ribbon, and no prices inside.</p></div>
@@ -146,8 +146,8 @@
 </main>
 
 <footer class="site">
-  <span class="brand">Noir</span>
-  <span>This is a demo store. Nothing here is for sale and no payments are taken.</span>
+  <span class="brand" id="brandFoot">NOIR</span>
+  <span id="footNote">Demo store. Products and prices are placeholders.</span>
   <span id="year"></span>
 </footer>
 
@@ -167,6 +167,7 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="script.js?v=6" defer></script>
+<script src="config.js?v=1" defer></script>
+<script src="script.js?v=7" defer></script>
 </body>
 </html>

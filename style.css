@@ -123,3 +123,9 @@ footer.site .brand{color:var(--ink)}
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-delay:0s!important}
   .wordmark::after{animation:none;background-position:45% 0}
 }
+
+/* template additions */
+.tile img,.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.initial{font-family:var(--serif);font-size:4rem;line-height:1;color:#d9d4ca}
+.thumb .initial{font-size:2rem}
+[hidden]{display:none!important}

@@ -1,29 +1,31 @@
 (() => {
-  // ---- Shop settings ----
-  const SHOP_NAME = 'NOIR';
-  const WHATSAPP_NUMBER = '233598119357'; // country code + number, no + or spaces
+  const STORE = window.STORE;
+  if (!STORE || !Array.isArray(STORE.products)) {
+    console.error('config.js is missing or has no products list.');
+    return;
+  }
 
-  const PRODUCTS = [
-    { id:'nuit', name:'Nuit Eau de Parfum', cat:'Fragrance', price:210, art:'perfume', note:'Black pepper, oud and smoke. 50 ml.' },
-    { id:'ambre', name:'Ambre Rose', cat:'Fragrance', price:185, art:'perfume2', note:'Amber, rose and vanilla. 50 ml.' },
-    { id:'lune', name:'Lune Blanche', cat:'Fragrance', price:160, art:'perfume3', note:'Jasmine, white musk and cedar. 30 ml.' },
-    { id:'vesper', name:'Vesper Tote', cat:'Bags', price:890, art:'tote', note:'Full-grain leather with a suede lining.' },
-    { id:'soir', name:'Soir Clutch', cat:'Bags', price:320, art:'clutch', note:'Satin finish with a detachable chain.' },
-    { id:'cinder', name:'Cinder Wallet', cat:'Bags', price:260, art:'wallet', note:'Six card slots and one flat pocket.' },
-    { id:'velours', name:'Velours Face Cream', cat:'Skincare', price:95, art:'jar', note:'Rich daily moisturizer with shea butter. 50 ml.' },
-    { id:'eclat', name:'Éclat Vitamin C Serum', cat:'Skincare', price:78, art:'serum', note:'Lightweight daily serum. 30 ml.' },
-    { id:'douceur', name:'Douceur Gentle Cleanser', cat:'Skincare', price:42, art:'tube', note:'Soft foaming face wash. 100 ml.' },
-    { id:'meridian', name:'Meridian Chronograph', cat:'Watches', price:1450, art:'watch', note:'Steel case, black dial, 40 mm.' },
-    { id:'shade', name:'Shade No. 9 Sunglasses', cat:'Accessories', price:320, art:'shades', note:'Black acetate frame, smoked lenses.' },
-    { id:'signet', name:'Onyx Signet Ring', cat:'Accessories', price:540, art:'ring', note:'Sterling silver with a polished onyx face.' },
-    { id:'midnight', name:'Midnight Silk Scarf', cat:'Accessories', price:180, art:'scarf', note:'Hand-rolled edges, 90 cm square.' },
-    { id:'ink', name:'Ink Fountain Pen', cat:'Accessories', price:410, art:'pen', note:'Matte black resin with a steel nib.' }
-  ];
+  const SHOP_NAME = STORE.shopName || 'Shop';
+  const WHATSAPP_NUMBER = String(STORE.whatsapp || '');
+  const PRODUCTS = STORE.products;
   const BY_ID = Object.fromEntries(PRODUCTS.map(p => [p.id, p]));
-  const CATS = ['All', ...new Set(PRODUCTS.map(p => p.cat))];
-  const money = n => new Intl.NumberFormat('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 }).format(n);
+  const CATS = ['All', ...new Set(PRODUCTS.map(p => p.cat).filter(Boolean))];
+  const CART_KEY = 'cart:' + SHOP_NAME;
+
+  let fmt;
+  try {
+    fmt = new Intl.NumberFormat(STORE.locale || 'en-US', { style: 'currency', currency: STORE.currency || 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  } catch (e) {
+    fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+  const money = n => fmt.format(n);
   const $ = s => document.querySelector(s);
-  const art = id => `<svg class="art" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><use href="#a-${id}"/></svg>`;
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const visual = p => {
+    if (p.img) return `<img src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy">`;
+    if (p.art) return `<svg class="art" viewBox="0 0 200 200" aria-hidden="true" focusable="false"><use href="#a-${esc(p.art)}"/></svg>`;
+    return `<span class="initial" aria-hidden="true">${esc(p.name.charAt(0))}</span>`;
+  };
 
   const grid = $('#grid'), filtersEl = $('#filters'), lines = $('#lines'),
         drawer = $('#drawer'), scrim = $('#scrim'), countEl = $('#count'),
@@ -35,10 +37,44 @@
   let lastFocus = null;
   let toastTimer;
 
+  /* ---------- branding from config.js ---------- */
+  function applyBranding() {
+    document.title = STORE.tagline ? `${SHOP_NAME} | ${STORE.tagline}` : SHOP_NAME;
+    const meta = document.querySelector('meta[name="description"]');
+    if (meta) meta.setAttribute('content', STORE.description || STORE.tagline || SHOP_NAME);
+    if (STORE.accent) document.documentElement.style.setProperty('--accent', STORE.accent);
+    const setText = (sel, txt) => { const el = $(sel); if (el && txt != null) el.textContent = txt; };
+    setText('#brandTop', SHOP_NAME);
+    setText('#brandFoot', SHOP_NAME);
+    setText('#tagline', STORE.tagline);
+    setText('#shop-title', STORE.collectionTitle);
+    setText('#footNote', STORE.footerNote);
+    const top = $('#brandTop');
+    if (top) top.setAttribute('aria-label', SHOP_NAME + ' home');
+    const hero = $('#hero-title');
+    if (hero) { hero.textContent = SHOP_NAME; hero.dataset.text = SHOP_NAME; }
+    const promises = $('#promises');
+    if (promises && Array.isArray(STORE.promises)) {
+      if (!STORE.promises.length) promises.hidden = true;
+      else promises.innerHTML = STORE.promises.map(x => `<div><h3>${esc(x.title)}</h3><p>${esc(x.text)}</p></div>`).join('');
+    }
+  }
+
+  // Shrink the big hero name if a long shop name would overflow the screen
+  function fitWordmark() {
+    const el = $('#hero-title');
+    if (!el) return;
+    el.style.fontSize = '';
+    const avail = el.clientWidth, need = el.scrollWidth;
+    if (avail && need > avail) {
+      el.style.fontSize = (parseFloat(getComputedStyle(el).fontSize) * (avail / need) * 0.97) + 'px';
+    }
+  }
+
   /* ---------- storage ---------- */
   function loadCart() {
     try {
-      const raw = JSON.parse(localStorage.getItem('noir-cart'));
+      const raw = JSON.parse(localStorage.getItem(CART_KEY));
       const clean = {};
       if (raw && typeof raw === 'object') {
         for (const [id, q] of Object.entries(raw)) {
@@ -46,9 +82,9 @@
         }
       }
       return clean;
-    } catch { return {}; }
+    } catch (e) { return {}; }
   }
-  function saveCart() { try { localStorage.setItem('noir-cart', JSON.stringify(cart)); } catch {} }
+  function saveCart() { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (e) {} }
 
   /* ---------- cart logic ---------- */
   const totalItems = () => Object.values(cart).reduce((a, b) => a + b, 0);
@@ -68,17 +104,18 @@
 
   /* ---------- rendering ---------- */
   function renderFilters() {
+    filtersEl.hidden = CATS.length <= 2;
     filtersEl.innerHTML = CATS.map(c =>
-      `<button class="chip" data-cat="${c}" aria-pressed="${c === filter}">${c}</button>`).join('');
+      `<button class="chip" data-cat="${esc(c)}" aria-pressed="${c === filter}">${esc(c)}</button>`).join('');
   }
   function renderGrid() {
     const list = filter === 'All' ? PRODUCTS : PRODUCTS.filter(p => p.cat === filter);
     grid.innerHTML = list.map(p => `
       <article class="card">
-        <div class="tile">${art(p.art)}</div>
-        <div class="meta"><h3>${p.name}</h3><span class="price">${money(p.price)}</span></div>
-        <p class="note">${p.note}</p>
-        <button class="add" data-add="${p.id}" aria-label="Add ${p.name} to bag">Add to bag</button>
+        <div class="tile">${visual(p)}</div>
+        <div class="meta"><h3>${esc(p.name)}</h3><span class="price">${money(p.price)}</span></div>
+        ${p.note ? `<p class="note">${esc(p.note)}</p>` : '<div class="note"></div>'}
+        <button class="add" data-add="${esc(p.id)}" aria-label="Add ${esc(p.name)} to bag">Add to bag</button>
       </article>`).join('');
   }
   function renderCount() {
@@ -95,15 +132,15 @@
       lines.innerHTML = entries.map(([id, q]) => {
         const p = BY_ID[id];
         return `
-        <li class="line" data-id="${id}">
-          <div class="thumb">${art(p.art)}</div>
+        <li class="line" data-id="${esc(id)}">
+          <div class="thumb">${visual(p)}</div>
           <div>
-            <h3>${p.name}</h3>
+            <h3>${esc(p.name)}</h3>
             <div class="unit">${money(p.price)} each</div>
             <div class="qty">
-              <button data-dec aria-label="Decrease quantity of ${p.name}">&minus;</button>
+              <button data-dec aria-label="Decrease quantity of ${esc(p.name)}">&minus;</button>
               <span>${q}</span>
-              <button data-inc aria-label="Increase quantity of ${p.name}">+</button>
+              <button data-inc aria-label="Increase quantity of ${esc(p.name)}">+</button>
             </div>
             <button class="rm" data-rm>Remove</button>
           </div>
@@ -146,7 +183,8 @@
     if (!b) return;
     filter = b.dataset.cat;
     renderFilters(); renderGrid();
-    filtersEl.querySelector(`[data-cat="${filter}"]`).focus();
+    const active = [...filtersEl.querySelectorAll('[data-cat]')].find(x => x.dataset.cat === filter);
+    if (active) active.focus();
   });
   grid.addEventListener('click', e => {
     const b = e.target.closest('[data-add]');
@@ -171,7 +209,7 @@
   checkoutBtn.addEventListener('click', () => {
     const entries = Object.entries(cart);
     if (!entries.length) return;
-    if (!/^\d{8,15}$/.test(WHATSAPP_NUMBER)) { toast('Add your WhatsApp number in script.js first.'); return; }
+    if (!/^\d{8,15}$/.test(WHATSAPP_NUMBER)) { toast('Add your WhatsApp number in config.js first.'); return; }
     const rows = entries.map(([id, q]) => `- ${q} x ${BY_ID[id].name} (${money(BY_ID[id].price * q)})`);
     const text = `Hello ${SHOP_NAME}, I'd like to order:\n${rows.join('\n')}\nTotal: ${money(subtotal())}`;
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
@@ -188,10 +226,14 @@
     }
   });
   window.addEventListener('storage', e => {
-    if (e.key === 'noir-cart') { cart = loadCart(); renderCount(); renderCart(); }
+    if (e.key === CART_KEY) { cart = loadCart(); renderCount(); renderCart(); }
   });
+  window.addEventListener('resize', fitWordmark);
 
   /* ---------- init ---------- */
+  applyBranding();
   $('#year').textContent = new Date().getFullYear();
   renderFilters(); renderGrid(); renderCount(); renderCart();
+  fitWordmark();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitWordmark);
 })();
