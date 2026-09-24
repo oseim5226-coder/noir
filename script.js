@@ -1,4 +1,8 @@
 (() => {
+  // ---- Shop settings ----
+  const SHOP_NAME = 'NOIR';
+  const WHATSAPP_NUMBER = '233YOURNUMBER'; // country code + number, no + or spaces
+
   const PRODUCTS = [
     { id:'nuit', name:'Nuit Eau de Parfum', cat:'Fragrance', price:210, art:'perfume', note:'Black pepper, oud and smoke. 50 ml.' },
     { id:'ambre', name:'Ambre Rose', cat:'Fragrance', price:185, art:'perfume2', note:'Amber, rose and vanilla. 50 ml.' },
@@ -164,7 +168,14 @@
   bagBtn.addEventListener('click', openDrawer);
   closeBtn.addEventListener('click', closeDrawer);
   scrim.addEventListener('click', closeDrawer);
-  checkoutBtn.addEventListener('click', () => toast("Checkout isn't connected yet. This is a demo store."));
+  checkoutBtn.addEventListener('click', () => {
+    const entries = Object.entries(cart);
+    if (!entries.length) return;
+    if (!/^\d{8,15}$/.test(WHATSAPP_NUMBER)) { toast('Add your WhatsApp number in script.js first.'); return; }
+    const rows = entries.map(([id, q]) => `- ${q} x ${BY_ID[id].name} (${money(BY_ID[id].price * q)})`);
+    const text = `Hello ${SHOP_NAME}, I'd like to order:\n${rows.join('\n')}\nTotal: ${money(subtotal())}`;
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
+  });
   document.addEventListener('keydown', e => {
     if (!isOpen()) return;
     if (e.key === 'Escape') { closeDrawer(); return; }
