@@ -296,5 +296,14 @@
 <a class="noir-wa" href="https://wa.me/233598119357" target="_blank" rel="noopener">CHAT ON WHATSAPP</a>
 </section>
 
+<script id="noir-greet">
+(function(){
+  var bar = document.querySelector(".noir-announce");
+  if(!bar) return;
+  var hr = new Date().getHours();
+  var g = hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening";
+  bar.textContent = g + ", welcome to NOIR. " + bar.textContent;
+})();
+</script>
 </body>
 </html>
